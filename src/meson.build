@@ -13,6 +13,7 @@ simple_networks_deps = [
   config_dep,
   dependency('gtk4'),
   dependency('libadwaita-1', version: '>= 1.4'),
+  dependency('libnm', version: '>= 1.50'),
 ]
 
 simple_networks_compiled_blueprints = custom_target('blueprints',
