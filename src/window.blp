@@ -6,27 +6,72 @@ template $SimpleNetworksWindow: Adw.ApplicationWindow {
   default-width: 800;
   default-height: 600;
 
-  content: Adw.ToolbarView {
-    [top]
-    Adw.HeaderBar {
-      [end]
-      MenuButton {
-        primary: true;
-        icon-name: "open-menu-symbolic";
-        tooltip-text: _("Main Menu");
-        menu-model: primary_menu;
-      }
-    }
+  content: Adw.NavigationSplitView split_view {  
+    sidebar: Adw.NavigationPage {
+      title: _("Sidebar");
+      tag: "sidebar";
 
-    content: Label label {
-      label: _("Hello, World!");
+      child: Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar {
+          show-title: false;
+          
+          [start]
+          MenuButton {
+            icon-name: "emblem-synchronizing-symbolic";
+            tooltip-text: _("Reload");
+          }
+          
+          [end]
+          MenuButton {
+            primary: true;
+            icon-name: "open-menu-symbolic";
+            tooltip-text: _("Main Menu");
+            menu-model: primary_menu;
+          }
+        }
 
-      styles [
-        "title-1",
-      ]
+        content: Adw.StatusPage {
+          title: _("Sidebar");
+
+          Button button {
+            visible: false;
+            halign: center;
+            can-shrink: true;
+            label: _("Open Content");
+            action-name: "navigation.push";
+            action-target: "'content'";
+
+            styles [
+              "pill",
+            ]
+          }
+        };
+      };
+    };
+
+    content: Adw.NavigationPage {
+      title: _("Content");
+      tag: "content";
+
+      child: Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar {
+          show-title: false;
+        }
+
+        content: Label label {
+          label: _("Hello, World!");
+
+          styles [
+            "title-1",
+          ]
+        };
+      };
     };
   };
 }
+
 
 menu primary_menu {
   section {
