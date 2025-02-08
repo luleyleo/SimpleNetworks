@@ -45,7 +45,7 @@ public class SimpleNetworks.Application : Adw.Application {
     private void on_about_action () {
         string[] developers = { "Leopold Luley" };
         var about = new Adw.AboutDialog () {
-            application_name = "simple-networks",
+            application_name = "Simple Networks",
             application_icon = "de.leopoldluley.SimpleNetworks",
             developer_name = "Leopold Luley",
             translator_credits = _("translator-credits"),
