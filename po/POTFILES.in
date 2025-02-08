@@ -1,0 +1,8 @@
+# List of source files containing translatable strings.
+# Please keep this file sorted alphabetically.
+data/de.leopoldluley.SimpleNetworks.desktop.in
+data/de.leopoldluley.SimpleNetworks.metainfo.xml.in
+data/de.leopoldluley.SimpleNetworks.gschema.xml
+src/main.vala
+src/window.vala
+src/window.ui
