@@ -42,12 +42,13 @@ public class SN.Window : Adw.ApplicationWindow {
     private NM.Client nm_client;
     private NM.DeviceWifi nm_wifi;
     
-    private GLib.ListStore connections = new GLib.ListStore(typeof(SN.AccessPoint));
+    private GLib.ListStore connections = new GLib.ListStore(typeof(NM.AccessPoint));
 
     [GtkChild]
     private unowned Gtk.ListView list_view;
 
     public Window (Gtk.Application app) {
+        typeof(AccessPointListItem).ensure();
         Object(application: app);
     }
     
@@ -80,7 +81,7 @@ public class SN.Window : Adw.ApplicationWindow {
             this.connections.remove_all();
             foreach (NM.AccessPoint ap in this.nm_wifi.access_points) {
                 if (ap.ssid == null) continue;
-                this.connections.append(new SN.AccessPoint(ap));
+                this.connections.append(ap);
             }
             stdout.printf("Found %u access points\n", this.connections.n_items);
         });

@@ -42,20 +42,11 @@ template $SNWindow: Adw.ApplicationWindow {
             
             Gtk.ListView list_view {
               single-click-activate: true;
-              
-              styles [
-                "sidebar"
-              ]
 
               factory: BuilderListItemFactory {
                 template ListItem {
-                  child: Gtk.Box {
-                    Gtk.Label {
-                      label: bind template.item as <$SNAccessPoint>.ssid;
-                      height-request: 50;
-                      margin-start: 12;
-                      margin-end: 12;
-                    }
+                  child: $SNAccessPointListItem {
+                      access-point: bind template.item as <$SNAccessPoint>;
                   };
                 }
               };

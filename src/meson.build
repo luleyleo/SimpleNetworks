@@ -2,11 +2,13 @@ simple_networks_sources = [
   'main.vala',
   'application.vala',
   'window.vala',
+  'AccessPointListItem.vala',
 ]
 
 simple_networks_blueprints = [
   'gtk/help-overlay.blp',
   'window.blp',
+  'AccessPointListItem.blp',
 ]
 
 simple_networks_deps = [
