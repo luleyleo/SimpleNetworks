@@ -18,9 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-public class SimpleNetworks.Application : Adw.Application {
-    private NM.Client nm_client;
-    
+public class SN.Application : Adw.Application {
     public Application () {
         Object (
             application_id: "de.leopoldluley.SimpleNetworks",
@@ -36,13 +34,11 @@ public class SimpleNetworks.Application : Adw.Application {
         };
         this.add_action_entries (action_entries, this);
         this.set_accels_for_action ("app.quit", {"<primary>q"});
-        
-        this.nm_client = new NM.Client(); 
     }
 
     public override void activate () {
         base.activate ();
-        var win = this.active_window ?? new SimpleNetworks.Window (this);
+        var win = this.active_window ?? new SN.Window (this);
         win.present ();
     }
 

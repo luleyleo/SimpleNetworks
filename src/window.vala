@@ -18,12 +18,71 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+public class SN.Connection : GLib.Object {
+    public string ssid { get; private set; default = "UNDEFINED"; }
+    public bool is_active { get; private set; default = false; }
+    
+    public Connection (NM.RemoteConnection conn) {
+        var settings = conn.get_setting_wireless();
+        this.ssid = (string)settings.ssid.get_data();
+    }
+}
+
+public class SN.AccessPoint : GLib.Object {
+    public string ssid { get; private set; }
+    public bool is_active { get; private set; }
+    
+    public AccessPoint (NM.AccessPoint ap) {
+        this.ssid = (string)ap.ssid.get_data();
+    }
+}
+
 [GtkTemplate (ui = "/de/leopoldluley/SimpleNetworks/window.ui")]
-public class SimpleNetworks.Window : Adw.ApplicationWindow {
+public class SN.Window : Adw.ApplicationWindow {
+    private NM.Client nm_client;
+    private NM.DeviceWifi nm_wifi;
+    
+    private GLib.ListStore connections = new GLib.ListStore(typeof(SN.AccessPoint));
+
     [GtkChild]
-    private unowned Gtk.Label label;
+    private unowned Gtk.ListView list_view;
 
     public Window (Gtk.Application app) {
-        Object (application: app);
+        Object(application: app);
+    }
+    
+    construct {
+        this.nm_client = new NM.Client();
+        
+        foreach (NM.Device device in this.nm_client.devices) {
+            if (device.device_type == NM.DeviceType.WIFI) {
+                this.nm_wifi = (NM.DeviceWifi)device;
+                stdout.printf("WIFI device found\n");
+                break;
+            }
+        }
+        
+        this.list_view.model = new Gtk.NoSelection(this.connections);
+        
+        this.scan_access_points();
+    }
+    
+    [GtkCallback]
+    private void on_reload_button_clicked(Gtk.Button button) {
+        this.scan_access_points();
+    }
+    
+    private void scan_access_points() {
+        stdout.printf("Starting scan...\n");
+        var nm_wifi = this.nm_wifi;
+        nm_wifi.request_scan_async.begin(null, (obj, res) => {
+            stdout.printf("Scan complete\n");
+            this.connections.remove_all();
+            foreach (NM.AccessPoint ap in this.nm_wifi.access_points) {
+                if (ap.ssid == null) continue;
+                this.connections.append(new SN.AccessPoint(ap));
+            }
+            stdout.printf("Found %u access points\n", this.connections.n_items);
+        });
     }
 }

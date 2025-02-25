@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $SimpleNetworksWindow: Adw.ApplicationWindow {
+template $SNWindow: Adw.ApplicationWindow {
   title: _("Simple Networks");
   default-width: 800;
   default-height: 600;
@@ -12,18 +12,21 @@ template $SimpleNetworksWindow: Adw.ApplicationWindow {
       tag: "sidebar";
 
       child: Adw.ToolbarView {
+        top-bar-style: flat;
+        
         [top]
         Adw.HeaderBar {
           show-title: false;
           
           [start]
-          MenuButton {
+          Gtk.Button {
             icon-name: "emblem-synchronizing-symbolic";
             tooltip-text: _("Reload");
+            clicked => $on_reload_button_clicked();
           }
           
           [end]
-          MenuButton {
+          Gtk.MenuButton {
             primary: true;
             icon-name: "open-menu-symbolic";
             tooltip-text: _("Main Menu");
@@ -31,21 +34,33 @@ template $SimpleNetworksWindow: Adw.ApplicationWindow {
           }
         }
 
-        content: Adw.StatusPage {
-          title: _("Sidebar");
+        content: Gtk.ScrolledWindow {
+          hexpand: true;
 
-          Button button {
-            visible: false;
-            halign: center;
-            can-shrink: true;
-            label: _("Open Content");
-            action-name: "navigation.push";
-            action-target: "'content'";
+          child: Viewport {
+            hscroll-policy: minimum;
+            
+            Gtk.ListView list_view {
+              single-click-activate: true;
+              
+              styles [
+                "sidebar"
+              ]
 
-            styles [
-              "pill",
-            ]
-          }
+              factory: BuilderListItemFactory {
+                template ListItem {
+                  child: Gtk.Box {
+                    Gtk.Label {
+                      label: bind template.item as <$SNAccessPoint>.ssid;
+                      height-request: 50;
+                      margin-start: 12;
+                      margin-end: 12;
+                    }
+                  };
+                }
+              };
+            }
+          };
         };
       };
     };
@@ -55,6 +70,8 @@ template $SimpleNetworksWindow: Adw.ApplicationWindow {
       tag: "content";
 
       child: Adw.ToolbarView {
+        top-bar-style: flat;
+        
         [top]
         Adw.HeaderBar {
           show-title: false;
