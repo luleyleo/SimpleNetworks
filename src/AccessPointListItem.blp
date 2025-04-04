@@ -4,10 +4,10 @@ using Adw 1;
 template $SNAccessPointListItem: Gtk.Widget {
   layout-manager: Gtk.BinLayout {};
 
-  
-  Adw.ActionRow container {
+  Adw.SwitchRow container {
     title: bind template.ssid;
     subtitle: bind template.subtitle;
     use-markup: false;
+    active: bind template.active;
   }
 }

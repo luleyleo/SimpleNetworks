@@ -29,11 +29,12 @@ public class SN.Connection : GLib.Object {
 }
 
 public class SN.AccessPoint : GLib.Object {
-    public string ssid { get; private set; }
     public bool is_active { get; private set; }
+    public NM.AccessPoint nm { get; private set; }
     
-    public AccessPoint (NM.AccessPoint ap) {
-        this.ssid = (string)ap.ssid.get_data();
+    public AccessPoint (NM.AccessPoint ap, bool is_active) {
+        this.is_active = is_active;
+        this.nm = ap;
     }
 }
 
@@ -42,7 +43,7 @@ public class SN.Window : Adw.ApplicationWindow {
     private NM.Client nm_client;
     private NM.DeviceWifi nm_wifi;
     
-    private GLib.ListStore connections = new GLib.ListStore(typeof(NM.AccessPoint));
+    private GLib.ListStore connections = new GLib.ListStore(typeof(SN.AccessPoint));
 
     [GtkChild]
     private unowned Gtk.ListView list_view;
@@ -76,12 +77,14 @@ public class SN.Window : Adw.ApplicationWindow {
     private void scan_access_points() {
         stdout.printf("Starting scan...\n");
         var nm_wifi = this.nm_wifi;
+        var active = nm_wifi.active_access_point;
         nm_wifi.request_scan_async.begin(null, (obj, res) => {
             stdout.printf("Scan complete\n");
             this.connections.remove_all();
-            foreach (NM.AccessPoint ap in this.nm_wifi.access_points) {
-                if (ap.ssid == null) continue;
-                this.connections.append(ap);
+            foreach (NM.AccessPoint nm_ap in this.nm_wifi.access_points) {
+                if (nm_ap.ssid == null) continue;
+                var sn_ap = new SN.AccessPoint(nm_ap, nm_ap == active);
+                this.connections.append(sn_ap);
             }
             stdout.printf("Found %u access points\n", this.connections.n_items);
         });
