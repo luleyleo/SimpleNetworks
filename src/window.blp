@@ -42,6 +42,7 @@ template $SNWindow: Adw.ApplicationWindow {
             
             Gtk.ListView list_view {
               single-click-activate: true;
+              activate => $on_access_point_activated();
 
               factory: BuilderListItemFactory {
                 template ListItem {

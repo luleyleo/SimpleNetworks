@@ -74,6 +74,36 @@ public class SN.Window : Adw.ApplicationWindow {
         this.scan_access_points();
     }
     
+    [GtkCallback]
+    private void on_access_point_activated(Gtk.ListView list, uint index) {
+        var access_point = (SN.AccessPoint)this.connections.get_item(index);
+        nm_client.activate_connection_async.begin(null, this.nm_wifi, access_point.nm.path, null, (obj, res) => {
+                    try {
+                        NM.ActiveConnection ac = nm_client.activate_connection_async.end(res);
+                        stdout.printf("activate: success\n");
+                    } catch (Error e) {
+                        stdout.printf("activate: %s\n", e.message);
+                    }
+                });
+                return;
+        nm_wifi.disconnect_async.begin(null, (obj, res) => {
+            try {
+                var status = nm_wifi.disconnect_async.end(res);
+                stdout.printf("disconnect: success\n");
+                nm_client.activate_connection_async.begin(null, this.nm_wifi, access_point.nm.path, null, (obj, res) => {
+                    try {
+                        NM.ActiveConnection ac = nm_client.activate_connection_async.end(res);
+                        stdout.printf("activate: success\n");
+                    } catch (Error e) {
+                        stdout.printf("activate: %s\n", e.message);
+                    }
+                });
+            } catch (Error e) {
+                stdout.printf("disconnect: %s\n", e.message);
+            }
+        });
+    }
+    
     private void scan_access_points() {
         stdout.printf("Starting scan...\n");
         var nm_wifi = this.nm_wifi;
